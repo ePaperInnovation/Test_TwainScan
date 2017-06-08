@@ -86,26 +86,26 @@ bool operator== (const TW_FIX32& _fix1, const TW_FIX32& _fix2)
 
 void PrintCMDMessage(const char* const pStr, ...)
 {
-  char buffer[200];
-
-  va_list valist;
-  va_start(valist, pStr);
-  #if (TWNDS_CMP == TWNDS_CMP_GNUGPP)
-    vsnprintf(buffer, 200, pStr, valist);
-  #elif (TWNDS_CMP == TWNDS_CMP_VISUALCPP) && (TWNDS_CMP_VERSION >= 1400)
-    _vsnprintf_s(buffer, 200, 200, pStr, valist);
-  #elif (TWNDS_CMP == TWNDS_CMP_VISUALCPP)
-    _vsnprintf(buffer, 200, pStr, valist);
-  #else
-    #error Sorry, we do not recognize this system...
-  #endif
-  va_end(valist);
-
-#ifdef _WINDOWS
-  TRACE(buffer);
-#else
-  cout << buffer;
-#endif
+//  char buffer[200];
+//
+//  va_list valist;
+//  va_start(valist, pStr);
+//  #if (TWNDS_CMP == TWNDS_CMP_GNUGPP)
+//    vsnprintf(buffer, 200, pStr, valist);
+//  #elif (TWNDS_CMP == TWNDS_CMP_VISUALCPP) && (TWNDS_CMP_VERSION >= 1400)
+//    _vsnprintf_s(buffer, 200, 200, pStr, valist);
+//  #elif (TWNDS_CMP == TWNDS_CMP_VISUALCPP)
+//    _vsnprintf(buffer, 200, pStr, valist);
+//  #else
+//    #error Sorry, we do not recognize this system...
+//  #endif
+//  va_end(valist);
+//
+//#ifdef _WINDOWS
+//  TRACE(buffer);
+//#else
+//  cout << buffer;
+//#endif
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -303,11 +303,47 @@ void TwainApp::disconnectDSM()
   return;
 }
 
-
-
 //////////////////////////////////////////////////////////////////////////////
 TW_IDENTITY _gSource; /**< used to store the source that is return by getDefaultDataSource */
 //////////////////////////////////////////////////////////////////////////////
+void TwainApp::userselectDataSource(TW_UINT32 * id)
+{
+  if(m_DSMState < 3)
+  {
+    cout << "You need to open the DSM first." << endl;
+    return;
+  }
+
+  // get default
+
+  memset(&_gSource, 0, sizeof(TW_IDENTITY));
+
+  TW_UINT16 twrc;
+
+  twrc = _DSM_Entry(
+    &m_MyInfo,
+    0,
+    DG_CONTROL,
+    DAT_IDENTITY,
+    MSG_USERSELECT ,
+    (TW_MEMREF) &_gSource);
+
+  // get id of the selected device
+  *id = _gSource.Id;
+
+  switch (twrc)
+  {
+    case TWRC_SUCCESS:
+      break;
+
+    case TWRC_FAILURE:
+      printError(0, "Failed to get the data source info!");
+      break;
+  }
+
+  return;
+}
+
 pTW_IDENTITY TwainApp::getDefaultDataSource()
 {
   if(m_DSMState < 3)

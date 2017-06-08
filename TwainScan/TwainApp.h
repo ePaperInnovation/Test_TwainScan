@@ -171,6 +171,11 @@ public:
   void disconnectDSM();
 
 /**
+* Provides device selection gui and returns the selected id.
+*/
+  void userselectDataSource(TW_UINT32 * id);
+
+/**
 * Queries the DSM for all available Data Sources.  Discover all Data 
 * Sources available and build a list of DS and store them in m_DataSources.
 */

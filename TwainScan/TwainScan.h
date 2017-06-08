@@ -46,6 +46,11 @@
 extern "C" __declspec(dllexport) double Add_hokus(double a, double b);
 extern "C" __declspec(dllexport) double Add_hokus2(double a, double b);
 
+extern "C" __declspec(dllexport) int ts_select(int *id);
+extern "C" __declspec(dllexport) int ts_scan(int id);
+
+//void negotiate_CAP(const pTW_CAPABILITY _pCap);
+
 #ifndef __MAIN_H__
 #define __MAIN_H__
 

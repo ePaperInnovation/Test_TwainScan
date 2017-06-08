@@ -564,7 +564,25 @@ int main(int argc, char *argv[])
   return ret;
 }
 
-int twainscan(int step)
+
+int ts_select(int *id)
+{
+  gpTwainApplicationCMD = new TwainAppCMD(NULL);
+
+  gpTwainApplicationCMD->connectDSM();
+
+  gpTwainApplicationCMD->userselectDataSource((TW_UINT32 *)id);
+
+  gpTwainApplicationCMD->disconnectDSM();
+
+  gpTwainApplicationCMD->exit();
+  delete gpTwainApplicationCMD;
+  gpTwainApplicationCMD = 0;
+
+  return 0;
+}
+
+int ts_scan (int id)
 {
 	 //UNUSEDARG(argc);
   //UNUSEDARG(argv);
@@ -583,7 +601,7 @@ int twainscan(int step)
 
   gpTwainApplicationCMD->connectDSM();
 
-  gpTwainApplicationCMD->loadDS(1);
+  gpTwainApplicationCMD->loadDS((TW_INT32) id);
 
   EnableDS();
 
