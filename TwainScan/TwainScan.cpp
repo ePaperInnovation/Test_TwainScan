@@ -92,13 +92,14 @@ extern bool   gUSE_CALLBACKS;         // defined in TwainApp.cpp
 
 double Add_hokus(double a, double b)
 {
-    return a + b;
+  return a + b;
 }
 
 double Add_hokus2(double a, double b)
 {
-    return ((a + b) * 2);
+  return ((a + b) * 2);
 }
+
 
 //////////////////////////////////////////////////////////////////////////////
 /** 
@@ -561,5 +562,107 @@ int main(int argc, char *argv[])
   gpTwainApplicationCMD = 0;
 
   return ret;
+}
+
+int twainscan(int step)
+{
+	 //UNUSEDARG(argc);
+  //UNUSEDARG(argv);
+  int ret = EXIT_SUCCESS;
+
+  // Instantiate the TWAIN application CMD class
+  HWND parentWindow = NULL;
+
+#ifdef TWH_CMP_MSC
+  parentWindow = GetConsoleWindow();
+#endif
+  gpTwainApplicationCMD = new TwainAppCMD(NULL /*parentWindow*/);
+
+  // setup a signal handler for SIGINT that will allow the program to stop
+  signal(SIGINT, &onSigINT);
+
+  gpTwainApplicationCMD->connectDSM();
+
+  gpTwainApplicationCMD->loadDS(1);
+
+  EnableDS();
+
+  gpTwainApplicationCMD->unloadDS();
+
+  gpTwainApplicationCMD->disconnectDSM();
+
+
+  //string input;
+
+  //printOptions();
+
+  // start the main event loop
+  //for (;;)
+  //{
+  //  cout << "\n(h for help) > ";
+  //  cin >> input;
+  //  cout << endl;
+
+  //  if("q" == input)
+  //  {
+  //    break;
+  //  }
+  //  else if("h" == input)
+  //  {
+  //    printOptions();
+  //  }
+  //  else if("cdsm" == input)
+  //  {
+  //    gpTwainApplicationCMD->connectDSM();
+  //  }
+  //  else if("xdsm" == input)
+  //  {
+  //    gpTwainApplicationCMD->disconnectDSM();
+  //  }
+  //  else if("lds" == input)
+  //  {
+  //    gpTwainApplicationCMD->printAvailableDataSources();
+  //  }
+  //  else if("pds" == input.substr(0,3))
+  //  {
+  //    gpTwainApplicationCMD->printIdentityStruct(atoi(input.substr(3,input.length()-3).c_str()));
+  //  }
+  //  else if("cds" == input.substr(0,3))
+  //  {
+  //    gpTwainApplicationCMD->loadDS(atoi(input.substr(3,input.length()-3).c_str()));
+  //  }
+  //  else if("xds" == input)
+  //  {
+  //    gpTwainApplicationCMD->unloadDS();
+  //  }
+  //  else if("caps" == input)
+  //  {
+  //    if(gpTwainApplicationCMD->m_DSMState < 3)
+  //    {
+  //      cout << "\nYou need to select a source first!" << endl;
+  //    }
+  //    else
+  //    {
+  //      negotiateCaps();
+  //      printOptions();
+  //    }
+  //  }
+  //  else if("scan" == input)
+  //  {
+  //    EnableDS();
+  //  }
+  //  else
+  //  {
+  //    // default action
+  //    printOptions();
+  //  }
+  //}
+
+  gpTwainApplicationCMD->exit();
+  delete gpTwainApplicationCMD;
+  gpTwainApplicationCMD = 0;
+
+
+	return 0;
 }
 
