@@ -80,6 +80,7 @@
 #include "CommonTWAIN.h"
 #include "FreeImage.h"
 #include "DSMInterface.h"
+#include "TwainScan.h"
 
 #ifndef TWH_CMP_MSC
   typedef void* HWND;

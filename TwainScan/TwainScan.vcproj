@@ -241,6 +241,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\TwainCout.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\TwainScan.cpp"
 				>
 			</File>
@@ -296,6 +300,10 @@
 			</File>
 			<File
 				RelativePath=".\TwainAppCMD.h"
+				>
+			</File>
+			<File
+				RelativePath=".\TwainCout.h"
 				>
 			</File>
 			<File

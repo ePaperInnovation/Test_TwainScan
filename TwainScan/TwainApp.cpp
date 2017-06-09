@@ -53,6 +53,7 @@
 #include "TwainApp.h"
 #include "CTiffWriter.h"
 #include "TwainString.h"
+#include "TwainCout.h"
 
 using namespace std;
 
@@ -86,26 +87,27 @@ bool operator== (const TW_FIX32& _fix1, const TW_FIX32& _fix2)
 
 void PrintCMDMessage(const char* const pStr, ...)
 {
-//  char buffer[200];
-//
-//  va_list valist;
-//  va_start(valist, pStr);
-//  #if (TWNDS_CMP == TWNDS_CMP_GNUGPP)
-//    vsnprintf(buffer, 200, pStr, valist);
-//  #elif (TWNDS_CMP == TWNDS_CMP_VISUALCPP) && (TWNDS_CMP_VERSION >= 1400)
-//    _vsnprintf_s(buffer, 200, 200, pStr, valist);
-//  #elif (TWNDS_CMP == TWNDS_CMP_VISUALCPP)
-//    _vsnprintf(buffer, 200, pStr, valist);
-//  #else
-//    #error Sorry, we do not recognize this system...
-//  #endif
-//  va_end(valist);
-//
-//#ifdef _WINDOWS
-//  TRACE(buffer);
-//#else
-//  cout << buffer;
-//#endif
+  //char buffer[200];
+
+  //va_list valist;
+  //va_start(valist, pStr);
+  //#if (TWNDS_CMP == TWNDS_CMP_GNUGPP)
+  //  vsnprintf(buffer, 200, pStr, valist);
+  //#elif (TWNDS_CMP == TWNDS_CMP_VISUALCPP) && (TWNDS_CMP_VERSION >= 1400)
+  //  _vsnprintf_s(buffer, 200, 200, pStr, valist);
+  //#elif (TWNDS_CMP == TWNDS_CMP_VISUALCPP)
+  //  _vsnprintf(buffer, 200, pStr, valist);
+  //#else
+  //  #error Sorry, we do not recognize this system...
+  //#endif
+  //va_end(valist);
+
+#ifdef _WINDOWS
+  TRACE(buffer);
+#else
+  tw_ostream tw_cout;
+  tw_cout << pStr; //buffer;
+#endif
 }
 
 //////////////////////////////////////////////////////////////////////////////

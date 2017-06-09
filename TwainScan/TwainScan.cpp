@@ -81,8 +81,28 @@ typedef union {
 #include "CommonTWAIN.h"
 #include "TwainAppCMD.h"
 #include "TwainApp_ui.h"
+#include "TwainCout.h"
+
+#include <iostream>
+#include <fstream>
 
 using namespace std;
+
+//// just a dummy class to overload cout and cerr
+//class tw_ostream{};
+//tw_ostream tw_cout;
+//
+//tw_ostream &operator<< (tw_ostream &ostr, char * a)
+//{
+//  ofstream myfile;
+//  myfile.open ("log.txt", fstream::app);
+//  myfile << a;
+//  myfile.close();
+//
+//  return ostr;
+//}
+
+
 
 //////////////////////////////////////////////////////////////////////////////
 // Global Variables
@@ -567,6 +587,8 @@ int main(int argc, char *argv[])
 
 int ts_select(int *id)
 {
+  tw_ostream tw_cout;
+  tw_cout << "Start Selection";
   gpTwainApplicationCMD = new TwainAppCMD(NULL);
 
   gpTwainApplicationCMD->connectDSM();
