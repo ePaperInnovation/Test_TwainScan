@@ -46,6 +46,7 @@ using namespace std;
 
 #include "TwainApp_ui.h"
 #include "TwainString.h"
+#include "TwainCout.h"
 
 
 //////////////////////////////////////////////////////////////////////////////
@@ -63,7 +64,7 @@ string getErrorString_UnexpectedType(const TW_UINT16 _unReceived)
 //////////////////////////////////////////////////////////////////////////////
 void printOptions()
 {
-  cout
+  tw_cout
     << "\n"
     << "Please enter an option\n"
     << "----------------------\n"
@@ -78,14 +79,14 @@ void printOptions()
     << "caps - negotiate capabilities\n"
     << "scan - start the scan\n"
 	<< "test - start test sequence\n"
-    << endl;
+    << tw_endl;
   return;
 }
 
 //////////////////////////////////////////////////////////////////////////////
 void printMainCaps()
 {
-  cout
+  tw_cout
     << "\n"
     << "Capabilites\n"
     << "-----------\n"
@@ -98,7 +99,7 @@ void printMainCaps()
     << "5 - ICAP_YRESOLUTION\n"
     << "6 - ICAP_FRAMES\n"
     << "7 - ICAP_UNITS\n"
-    << endl;
+    << tw_endl;
   return;
 }
 
@@ -110,7 +111,7 @@ void print_ICAP(const TW_UINT16 _unCap, pTW_ONEVALUE _pCap)
     return;
   }
 
-  cout
+  tw_cout
     << "\n"
     << convertCAP_toString(_unCap) << "\n"
     << "--------------\n"
@@ -122,7 +123,7 @@ void print_ICAP(const TW_UINT16 _unCap, pTW_ONEVALUE _pCap)
     case TWTY_FIX32:
     {
       pTW_FIX32 pFix32 = (pTW_FIX32)&_pCap->Item;
-      cout << "1 - " << pFix32->Whole << "." << pFix32->Frac << "*\n" << endl;
+      tw_cout << "1 - " << pFix32->Whole << "." << pFix32->Frac << "*\n" << tw_endl;
     }
     break;
 
@@ -130,7 +131,7 @@ void print_ICAP(const TW_UINT16 _unCap, pTW_ONEVALUE _pCap)
     {
       pTW_FRAME pframe = (pTW_FRAME)&_pCap->Item;
 
-      cout
+      tw_cout
         << "1 - Frame Data:*\n"
         << "\tLeft,\tTop,\tRight,\tBottom\n" 
         << "\t" << FIX32ToFloat(pframe->Left) << ",\t"
@@ -138,7 +139,7 @@ void print_ICAP(const TW_UINT16 _unCap, pTW_ONEVALUE _pCap)
         << FIX32ToFloat(pframe->Right) << ",\t"
         << FIX32ToFloat(pframe->Bottom) << "\n"
         << "\n"
-        << endl;
+        << tw_endl;
     }
     break;
 
@@ -150,37 +151,37 @@ void print_ICAP(const TW_UINT16 _unCap, pTW_ONEVALUE _pCap)
     case TWTY_UINT32:
     case TWTY_BOOL:
     {
-      cout << "1 - " << convertCAP_Item_toString(_unCap, _pCap->Item, _pCap->ItemType) << "*" << endl;
+      tw_cout << "1 - " << convertCAP_Item_toString(_unCap, _pCap->Item, _pCap->ItemType) << "*" << tw_endl;
     }
     break;
 
     case TWTY_STR32:
     {
-      cout << "1 - " << (pTW_STR32)&_pCap->ItemType << "*" << endl;
+      tw_cout << "1 - " << (pTW_STR32)&_pCap->ItemType << "*" << tw_endl;
     }
     break;
 
     case TWTY_STR64:
     {
-      cout << "1 - " << (pTW_STR64)&_pCap->ItemType << "*" << endl;
+      tw_cout << "1 - " << (pTW_STR64)&_pCap->ItemType << "*" << tw_endl;
     }
     break;
 
     case TWTY_STR128:
     {
-      cout << "1 - " << (pTW_STR128)&_pCap->ItemType << "*" << endl;
+      tw_cout << "1 - " << (pTW_STR128)&_pCap->ItemType << "*" << tw_endl;
     }
     break;
 
     case TWTY_STR255:
     {
-      cout << "1 - " << (pTW_STR255)&_pCap->ItemType << "*" << endl;
+      tw_cout << "1 - " << (pTW_STR255)&_pCap->ItemType << "*" << tw_endl;
     }
     break;
 
     default:
     {
-      cerr << getErrorString_UnexpectedType(_pCap->ItemType) << endl;
+      tw_cerr << getErrorString_UnexpectedType(_pCap->ItemType) << tw_endl;
     }
     break;
 
@@ -196,7 +197,7 @@ void print_ICAP(const TW_UINT16 _unCap, pTW_ENUMERATION _pCap)
     return;
   }
 
-  cout
+  tw_cout
     << "\n"
     << convertCAP_toString(_unCap) << "\n"
     << "--------------\n"
@@ -209,50 +210,50 @@ void print_ICAP(const TW_UINT16 _unCap, pTW_ENUMERATION _pCap)
     {
       case TWTY_UINT32:
         {
-          cout << x << " - " << convertCAP_Item_toString(_unCap, ((pTW_UINT32)(&_pCap->ItemList))[x], _pCap->ItemType);
+          tw_cout << x << " - " << convertCAP_Item_toString(_unCap, ((pTW_UINT32)(&_pCap->ItemList))[x], _pCap->ItemType);
         }
         break;
 
       case TWTY_INT32:
         {
-          cout << x << " - " << convertCAP_Item_toString(_unCap, ((pTW_INT32)(&_pCap->ItemList))[x], _pCap->ItemType);
+          tw_cout << x << " - " << convertCAP_Item_toString(_unCap, ((pTW_INT32)(&_pCap->ItemList))[x], _pCap->ItemType);
         }
         break;
 
       case TWTY_UINT16:
         {
-          cout << x << " - " << convertCAP_Item_toString(_unCap, ((pTW_UINT16)(&_pCap->ItemList))[x], _pCap->ItemType);
+          tw_cout << x << " - " << convertCAP_Item_toString(_unCap, ((pTW_UINT16)(&_pCap->ItemList))[x], _pCap->ItemType);
         }
         break;
 
       case TWTY_INT16:
         {
-          cout << x << " - " << convertCAP_Item_toString(_unCap, ((pTW_INT16)(&_pCap->ItemList))[x], _pCap->ItemType);
+          tw_cout << x << " - " << convertCAP_Item_toString(_unCap, ((pTW_INT16)(&_pCap->ItemList))[x], _pCap->ItemType);
         }
         break;
 
       case TWTY_UINT8:
         {
-          cout << x << " - " << convertCAP_Item_toString(_unCap, ((pTW_UINT8)(&_pCap->ItemList))[x], _pCap->ItemType);
+          tw_cout << x << " - " << convertCAP_Item_toString(_unCap, ((pTW_UINT8)(&_pCap->ItemList))[x], _pCap->ItemType);
         }
         break;
 
       case TWTY_INT8:
         {
-          cout << x << " - " << convertCAP_Item_toString(_unCap, ((pTW_INT8)(&_pCap->ItemList))[x], _pCap->ItemType);
+          tw_cout << x << " - " << convertCAP_Item_toString(_unCap, ((pTW_INT8)(&_pCap->ItemList))[x], _pCap->ItemType);
         }
         break;
 
       case TWTY_FIX32:
         {
-          cout << x << " - " << ((pTW_FIX32)(&_pCap->ItemList))[x].Whole << "." << (int)( ( ((pTW_FIX32)(&_pCap->ItemList))[x].Frac/65536.0 + .0005 )*1000 );
+          tw_cout << x << " - " << ((pTW_FIX32)(&_pCap->ItemList))[x].Whole << "." << (int)( ( ((pTW_FIX32)(&_pCap->ItemList))[x].Frac/65536.0 + .0005 )*1000 );
         }
         break;
 
       case TWTY_FRAME:
         {
           pTW_FRAME pframe = &((pTW_FRAME)(&_pCap->ItemList))[x];
-          cout << x << " - Frame Data:\n"
+          tw_cout << x << " - Frame Data:\n"
                << "\tLeft,\tTop,\tRight,\tBottom\n" 
                << "\t" << FIX32ToFloat(pframe->Left) << ",\t"
                << FIX32ToFloat(pframe->Top) << ",\t"
@@ -263,45 +264,45 @@ void print_ICAP(const TW_UINT16 _unCap, pTW_ENUMERATION _pCap)
 
       case TWTY_STR32:
         {
-          cout << "1 - " << &((pTW_STR32)(&_pCap->ItemList))[x];
+          tw_cout << "1 - " << &((pTW_STR32)(&_pCap->ItemList))[x];
         }
         break;
 
       case TWTY_STR64:
         {
-          cout << "1 - " << &((pTW_STR64)(&_pCap->ItemList))[x];
+          tw_cout << "1 - " << &((pTW_STR64)(&_pCap->ItemList))[x];
         }
         break;
 
       case TWTY_STR128:
         {
-          cout << "1 - " << &((pTW_STR128)(&_pCap->ItemList))[x];
+          tw_cout << "1 - " << &((pTW_STR128)(&_pCap->ItemList))[x];
         }
         break;
 
       case TWTY_STR255:
         {
-          cout << "1 - " << &((pTW_STR255)(&_pCap->ItemList))[x];
+          tw_cout << "1 - " << &((pTW_STR255)(&_pCap->ItemList))[x];
         }
         break;
 
 
       default:
         {
-          cerr << getErrorString_UnexpectedType(_pCap->ItemType) << endl;
+          tw_cerr << getErrorString_UnexpectedType(_pCap->ItemType) << tw_endl;
         }
         break;
     }
 
     if(x == _pCap->CurrentIndex)
     {
-      cout << "*";
+      tw_cout << "*";
     }
 
-    cout << "\n";
+    tw_cout << "\n";
   }
 
-  cout << endl;
+  tw_cout << tw_endl;
   return;
 }
 //////////////////////////////////////////////////////////////////////////////

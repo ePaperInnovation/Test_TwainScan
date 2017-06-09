@@ -64,6 +64,7 @@
 #endif
 
 #include "TwainScan.h"
+#include "TwainCout.h"
 
 #include <stdexcept>
 
@@ -88,7 +89,7 @@ typedef union {
 
 using namespace std;
 
-//// just a dummy class to overload cout and cerr
+//// just a dummy class to overload tw_cout and tw_cerr
 //class tw_ostream{};
 //tw_ostream tw_cout;
 //
@@ -129,7 +130,7 @@ double Add_hokus2(double a, double b)
 void onSigINT(int _sig)
 {
   //UNUSEDARG(_sig);
-  cout << "\nGoodbye!" << endl;
+  tw_cout << "\nGoodbye!" << tw_endl;
   exit(0);
 }
 
@@ -165,9 +166,9 @@ void negotiate_CAP(const pTW_CAPABILITY _pCap)
         print_ICAP(_pCap->Cap, (pTW_ONEVALUE)(pVal));
       }
 
-      cout << "\nset cap# > ";
+      tw_cout << "\nset cap# > ";
       cin >> input;
-      cout << endl;
+      tw_cout << tw_endl;
 
       if("q" == input)
       {
@@ -227,7 +228,7 @@ void negotiate_CAP(const pTW_CAPABILITY _pCap)
             break;
 
             default:
-              cerr << "Unsupported capability" << endl;
+              tw_cerr << "Unsupported capability" << tw_endl;
             break;
           }
         }
@@ -236,7 +237,7 @@ void negotiate_CAP(const pTW_CAPABILITY _pCap)
     }
     else
     {
-      cerr << "Unsupported capability" << endl;
+      tw_cerr << "Unsupported capability" << tw_endl;
       break;
     }
   }
@@ -253,7 +254,7 @@ void negotiateCaps()
   // If the app is not in state 4, don't even bother showing this menu.
   if(gpTwainApplicationCMD->m_DSMState < 4)
   {
-    cerr << "\nNeed to open a source first\n" << endl;
+    tw_cerr << "\nNeed to open a source first\n" << tw_endl;
     return;
   }
 
@@ -264,9 +265,9 @@ void negotiateCaps()
   for (;;)
   {
     printMainCaps();
-    cout << "\n(h for help) > ";
+    tw_cout << "\n(h for help) > ";
     cin >> input;
-    cout << endl;
+    tw_cout << tw_endl;
 
     if("q" == input)
     {
@@ -392,7 +393,7 @@ void EnableDS()
           break;
 
         default:
-          cerr << "\nError - Unknown message in MSG_PROCESSEVENT loop\n" << endl;
+          tw_cerr << "\nError - Unknown message in MSG_PROCESSEVENT loop\n" << tw_endl;
           break;
       }
     }
@@ -477,7 +478,7 @@ DSMCallback(pTW_IDENTITY _pOrigin,
       break;
 
     default:
-      cerr << "Error - Unknown message in callback routine" << endl;
+      tw_cerr << "Error - Unknown message in callback routine" << tw_endl;
       twrc = TWRC_FAILURE;
       break;
   }
@@ -518,9 +519,9 @@ int main(int argc, char *argv[])
   // start the main event loop
   for (;;)
   {
-    cout << "\n(h for help) > ";
+    tw_cout << "\n(h for help) > ";
     cin >> input;
-    cout << endl;
+    tw_cout << tw_endl;
 
     if("q" == input)
     {
@@ -558,7 +559,7 @@ int main(int argc, char *argv[])
     {
       if(gpTwainApplicationCMD->m_DSMState < 3)
       {
-        cout << "\nYou need to select a source first!" << endl;
+        tw_cout << "\nYou need to select a source first!" << tw_endl;
       }
       else
       {
@@ -639,9 +640,9 @@ int ts_scan (int id)
   // start the main event loop
   //for (;;)
   //{
-  //  cout << "\n(h for help) > ";
+  //  tw_cout << "\n(h for help) > ";
   //  cin >> input;
-  //  cout << endl;
+  //  tw_cout << tw_endl;
 
   //  if("q" == input)
   //  {
@@ -679,7 +680,7 @@ int ts_scan (int id)
   //  {
   //    if(gpTwainApplicationCMD->m_DSMState < 3)
   //    {
-  //      cout << "\nYou need to select a source first!" << endl;
+  //      tw_cout << "\nYou need to select a source first!" << tw_endl;
   //    }
   //    else
   //    {

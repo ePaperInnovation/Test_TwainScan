@@ -57,8 +57,6 @@ extern "C" __declspec(dllexport) int ts_scan(int id);
 #include "Common.h"
 #include "CommonTWAIN.h"
 
-
-
 #ifdef TWH_CMP_MSC
   #include <tchar.h>
 

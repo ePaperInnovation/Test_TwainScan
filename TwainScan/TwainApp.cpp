@@ -105,7 +105,7 @@ void PrintCMDMessage(const char* const pStr, ...)
 #ifdef _WINDOWS
   TRACE(buffer);
 #else
-  tw_ostream tw_cout;
+  
   tw_cout << pStr; //buffer;
 #endif
 }
@@ -312,7 +312,7 @@ void TwainApp::userselectDataSource(TW_UINT32 * id)
 {
   if(m_DSMState < 3)
   {
-    cout << "You need to open the DSM first." << endl;
+    tw_cout << "You need to open the DSM first." << tw_endl;
     return;
   }
 
@@ -350,7 +350,7 @@ pTW_IDENTITY TwainApp::getDefaultDataSource()
 {
   if(m_DSMState < 3)
   {
-    cout << "You need to open the DSM first." << endl;
+    tw_cout << "You need to open the DSM first." << tw_endl;
     return NULL;
   }
 
@@ -386,7 +386,7 @@ pTW_IDENTITY TwainApp::setDefaultDataSource(unsigned int _index)
 {
   if(m_DSMState < 3)
   {
-    cout << "You need to open the DSM first." << endl;
+    tw_cout << "You need to open the DSM first." << tw_endl;
     return NULL;
   }
 
@@ -727,20 +727,20 @@ TW_INT16 TwainApp::printError(pTW_IDENTITY _pdestID, const string& _errorMsg)
     TRACE("\n");
   }
 #else
-  cerr << "app: ";
+  tw_cerr << "app: ";
 
   if(_errorMsg.length() > 0)
   {
-    cerr << _errorMsg;
+    tw_cerr << _errorMsg;
   }
   else
   {
-    cerr << "An error has occurred.";
+    tw_cerr << "An error has occurred.";
   }
 
   if(TWRC_SUCCESS == getTWCC(_pdestID, c))
   {
-    cerr << " The condition code is: " << convertConditionCode_toString(c) << endl;
+    tw_cerr << " The condition code is: " << convertConditionCode_toString(c) << tw_endl;
   }
 #endif
 

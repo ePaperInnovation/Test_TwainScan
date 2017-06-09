@@ -41,6 +41,7 @@
 #endif
 #include "CommonTWAIN.h"
 #include "DSMInterface.h"
+#include "TwainCout.h"
 
 #include <iostream>
 using namespace std;
@@ -81,7 +82,7 @@ TW_UINT16 _DSM_Entry( pTW_IDENTITY _pOrigin,
 
   if((0 == gpDSM) && !LoadDSMLib(kTWAIN_DSM_DIR kTWAIN_DSM_DLL_NAME))
   {
-    cerr << "Could not load the DSM: " << kTWAIN_DSM_DIR kTWAIN_DSM_DLL_NAME << endl;
+    tw_cerr << "Could not load the DSM: " << kTWAIN_DSM_DIR kTWAIN_DSM_DLL_NAME << tw_endl;
     return 0;   /*< return 0.  @todo are we sure of this return? */
   }
 
@@ -124,23 +125,23 @@ bool LoadDSMLib(char* _pszLibName)
     if((gpDSM_Entry=(DSMENTRYPROC)LOADFUNCTION(gpDSM, "DSM_Entry")) == 0)
     {
 #ifdef TWH_CMP_MSC // dlsym returning NULL is not an error on Unix
-      cerr << "Error - Could not find DSM_Entry function in DSM: " << _pszLibName << endl;
+      tw_cerr << "Error - Could not find DSM_Entry function in DSM: " << _pszLibName << tw_endl;
       return false; 
 #endif //TWH_CMP_MSC
     }
 #ifdef TWH_CMP_GNU
     if ((error = dlerror()) != 0)
     {
-      cerr << "App - dlsym: " << error << endl;
+      tw_cerr << "App - dlsym: " << error << tw_endl;
       return false;
     }
 #endif //TWH_CMP_GNU
   }
   else
   {
-    cerr << "Error - Could not load DSM: " << _pszLibName << endl;
+    tw_cerr << "Error - Could not load DSM: " << _pszLibName << tw_endl;
 #ifdef TWH_CMP_GNU
-    cerr << "App - dlopen: " << dlerror() << endl;
+    tw_cerr << "App - dlopen: " << dlerror() << tw_endl;
 #endif //TWH_CMP_GNU
     return false;
   }
