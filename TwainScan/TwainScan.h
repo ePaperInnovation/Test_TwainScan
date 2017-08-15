@@ -60,15 +60,17 @@ extern "C" __declspec(dllexport) int ts_select(int *id);
 extern "C" __declspec(dllexport) int ts_scan(int id);
 extern "C" __declspec(dllexport) int ts_get_config(int id);
 
-void print_config();
-
-//void negotiate_CAP(const pTW_CAPABILITY _pCap);
-
-
 
 #include "Common.h"
 #include "CommonTWAIN.h"
 #include "TwainApp.h"
+#include "twain.h"
+
+void print_config();
+void print_cap (TW_CAPABILITY * _ptw_capability);
+
+//void negotiate_CAP(const pTW_CAPABILITY _pCap);
+
 
 #ifdef TWH_CMP_MSC
   #include <tchar.h>

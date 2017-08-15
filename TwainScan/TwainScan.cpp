@@ -767,69 +767,73 @@ int ts_get_config (int id)
 
 void print_config ()
 {
-
-  TwainApp *_twainApp = new TwainApp();
   TW_MEMREF pVal;
 
   // xfermech
-  pVal = _DSM_LockMemory(gpTwainApplicationCMD->m_ICAP_XFERMECH.hContainer);
-  print_ICAP(gpTwainApplicationCMD->m_ICAP_XFERMECH.Cap, (pTW_ENUMERATION)(pVal));
-  _DSM_UnlockMemory(gpTwainApplicationCMD->m_ICAP_XFERMECH.hContainer);
+  print_cap(&(gpTwainApplicationCMD->m_ICAP_XFERMECH));
 
   // pixeltype
-  pVal = _DSM_LockMemory(gpTwainApplicationCMD->m_ICAP_PIXELTYPE.hContainer);
-  print_ICAP(gpTwainApplicationCMD->m_ICAP_PIXELTYPE.Cap, (pTW_ENUMERATION)(pVal));
-  _DSM_UnlockMemory(gpTwainApplicationCMD->m_ICAP_PIXELTYPE.hContainer);
+  print_cap(&(gpTwainApplicationCMD->m_ICAP_PIXELTYPE));
 
   // bitdepth
-  pVal = _DSM_LockMemory(gpTwainApplicationCMD->m_ICAP_BITDEPTH.hContainer);
-  print_ICAP(gpTwainApplicationCMD->m_ICAP_BITDEPTH.Cap, (pTW_ENUMERATION)(pVal));
-  _DSM_UnlockMemory(gpTwainApplicationCMD->m_ICAP_BITDEPTH.hContainer);
+  print_cap(&(gpTwainApplicationCMD->m_ICAP_BITDEPTH));
 
   // imagefileformat
-  pVal = _DSM_LockMemory(gpTwainApplicationCMD->m_ICAP_IMAGEFILEFORMAT.hContainer);
-  print_ICAP(gpTwainApplicationCMD->m_ICAP_IMAGEFILEFORMAT.Cap, (pTW_ENUMERATION)(pVal));
-  _DSM_UnlockMemory(gpTwainApplicationCMD->m_ICAP_IMAGEFILEFORMAT.hContainer);
+  print_cap(&(gpTwainApplicationCMD->m_ICAP_IMAGEFILEFORMAT));
 
   // units
-  pVal = _DSM_LockMemory(gpTwainApplicationCMD->m_ICAP_UNITS.hContainer);
-  print_ICAP(gpTwainApplicationCMD->m_ICAP_UNITS.Cap, (pTW_ENUMERATION)(pVal));
-  _DSM_UnlockMemory(gpTwainApplicationCMD->m_ICAP_UNITS.hContainer);
+  print_cap(&(gpTwainApplicationCMD->m_ICAP_UNITS));
 
   // xresolution
-  pVal = _DSM_LockMemory(gpTwainApplicationCMD->m_ICAP_XRESOLUTION.hContainer);
-  print_ICAP(gpTwainApplicationCMD->m_ICAP_XRESOLUTION.Cap, (pTW_RANGE)(pVal));
-  _DSM_UnlockMemory(gpTwainApplicationCMD->m_ICAP_XRESOLUTION.hContainer);
+  print_cap(&(gpTwainApplicationCMD->m_ICAP_XRESOLUTION));
 
   // yresolution
-  pVal = _DSM_LockMemory(gpTwainApplicationCMD->m_ICAP_YRESOLUTION.hContainer);
-  print_ICAP(gpTwainApplicationCMD->m_ICAP_YRESOLUTION.Cap, (pTW_RANGE)(pVal));
-  _DSM_UnlockMemory(gpTwainApplicationCMD->m_ICAP_YRESOLUTION.hContainer);
+  print_cap(&(gpTwainApplicationCMD->m_ICAP_YRESOLUTION));
 
   // gamma
-  pVal = _DSM_LockMemory(gpTwainApplicationCMD->m_ICAP_GAMMA.hContainer);
-  print_ICAP(gpTwainApplicationCMD->m_ICAP_GAMMA.Cap, (pTW_ONEVALUE)(pVal));
-  _DSM_UnlockMemory(gpTwainApplicationCMD->m_ICAP_GAMMA.hContainer);
+  print_cap(&(gpTwainApplicationCMD->m_ICAP_GAMMA));
 
   // brightness
-  pVal = _DSM_LockMemory(gpTwainApplicationCMD->m_ICAP_BRIGHTNESS.hContainer);
-  print_ICAP(gpTwainApplicationCMD->m_ICAP_BRIGHTNESS.Cap, (pTW_RANGE)(pVal));
-  _DSM_UnlockMemory(gpTwainApplicationCMD->m_ICAP_BRIGHTNESS.hContainer);
+  print_cap(&(gpTwainApplicationCMD->m_ICAP_BRIGHTNESS));
 
   // contrast
-  pVal = _DSM_LockMemory(gpTwainApplicationCMD->m_ICAP_CONTRAST.hContainer);
-  print_ICAP(gpTwainApplicationCMD->m_ICAP_CONTRAST.Cap, (pTW_RANGE)(pVal));
-  _DSM_UnlockMemory(gpTwainApplicationCMD->m_ICAP_CONTRAST.hContainer);
+  print_cap(&(gpTwainApplicationCMD->m_ICAP_CONTRAST));
 
   // frames
-  pVal = _DSM_LockMemory(gpTwainApplicationCMD->m_ICAP_FRAMES.hContainer);
-  print_ICAP(gpTwainApplicationCMD->m_ICAP_FRAMES.Cap, (pTW_ONEVALUE)(pVal));
-  _DSM_UnlockMemory(gpTwainApplicationCMD->m_ICAP_FRAMES.hContainer);
+  print_cap(&(gpTwainApplicationCMD->m_ICAP_FRAMES));
 
   // colormanagement enable
-  pVal = _DSM_LockMemory(gpTwainApplicationCMD->m_CAP_COLORMANAGEMENTENABLED.hContainer);
-  print_ICAP(gpTwainApplicationCMD->m_CAP_COLORMANAGEMENTENABLED.Cap, (pTW_ONEVALUE)(pVal));
-  _DSM_UnlockMemory(gpTwainApplicationCMD->m_CAP_COLORMANAGEMENTENABLED.hContainer);
+  print_cap(&(gpTwainApplicationCMD->m_CAP_COLORMANAGEMENTENABLED));
+
+  return;
+}
+
+
+void print_cap (TW_CAPABILITY * _ptw_capability)
+{
+  //TwainApp *_twainApp = new TwainApp();
+  TW_MEMREF pVal;
+
+  pVal = _DSM_LockMemory(_ptw_capability->hContainer);
+
+  switch(_ptw_capability->ConType)
+  {
+    case TWON_ENUMERATION:
+      print_ICAP(_ptw_capability->Cap, (pTW_ENUMERATION)(pVal));
+    break;
+    case TWON_ONEVALUE:
+        print_ICAP(_ptw_capability->Cap, (pTW_ONEVALUE)(pVal));
+      break;
+    case TWON_RANGE:
+        print_ICAP(_ptw_capability->Cap, (pTW_RANGE)(pVal));
+      break;
+    default:
+      tw_cerr << "print_cap() does not support this ConType: " 
+              << _ptw_capability->ConType 
+              << tw_endl;
+  }
+
+  _DSM_UnlockMemory(_ptw_capability->hContainer);
 
   return;
 }
