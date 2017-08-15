@@ -54,7 +54,7 @@ tw_ostream &operator<< (tw_ostream &ostr, string a)
 
 tw_ostream &operator<< (tw_ostream &ostr, int a)
 {
-  char * str = "";
+  char str [100];
   _itoa(a,str,10);
   _write(str);
 
@@ -63,7 +63,7 @@ tw_ostream &operator<< (tw_ostream &ostr, int a)
 
 tw_ostream &operator<< (tw_ostream &ostr, short a)
 {
-  char * str = "";
+  char str [100];
   _itoa(a,str,10);
   _write(str);
 
@@ -72,7 +72,7 @@ tw_ostream &operator<< (tw_ostream &ostr, short a)
 
 tw_ostream &operator<< (tw_ostream &ostr, unsigned short a)
 {
-  char * str = "";
+  char str [100];
   _itoa(a,str,10);
   _write(str);
 
@@ -81,8 +81,9 @@ tw_ostream &operator<< (tw_ostream &ostr, unsigned short a)
 
 tw_ostream &operator<< (tw_ostream &ostr, float a)
 {
-  char * str = "";
-  _ltoa(a,str,10);
+  char str [100];
+  sprintf(str, "%f", a);
+  str[49] = '\0';
   _write(str);
 
   return ostr;
@@ -90,8 +91,8 @@ tw_ostream &operator<< (tw_ostream &ostr, float a)
 
 tw_ostream &operator<< (tw_ostream &ostr, unsigned long a)
 {
-  char * str = "";
-  _ltoa(a,str,10);
+  char str [100];
+  sprintf(str, "%lu", a); 
   _write(str);
 
   return ostr;
@@ -99,8 +100,8 @@ tw_ostream &operator<< (tw_ostream &ostr, unsigned long a)
 
 tw_ostream &operator<< (tw_ostream &ostr, long a)
 {
-  char * str = "";
-  _ltoa(a,str,10);
+  char str [100];
+  sprintf(str, "%l", a); 
   _write(str);
 
   return ostr;

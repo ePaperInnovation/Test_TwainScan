@@ -42,20 +42,33 @@
 * @author TWAIN Working Group
 * @date October 2007
 */
+#ifndef __MAIN_H__
+#define __MAIN_H__
+
+enum ENUM_TS_ACTION
+{
+  TS_SCAN = 0,
+  TS_GET_CONFIG =1
+};
 
 extern "C" __declspec(dllexport) double Add_hokus(double a, double b);
 extern "C" __declspec(dllexport) double Add_hokus2(double a, double b);
 
+int ts_action (int id, ENUM_TS_ACTION ts_action);
+
 extern "C" __declspec(dllexport) int ts_select(int *id);
 extern "C" __declspec(dllexport) int ts_scan(int id);
+extern "C" __declspec(dllexport) int ts_get_config(int id);
+
+void print_config();
 
 //void negotiate_CAP(const pTW_CAPABILITY _pCap);
 
-#ifndef __MAIN_H__
-#define __MAIN_H__
+
 
 #include "Common.h"
 #include "CommonTWAIN.h"
+#include "TwainApp.h"
 
 #ifdef TWH_CMP_MSC
   #include <tchar.h>
@@ -72,6 +85,9 @@ extern "C" __declspec(dllexport) int ts_scan(int id);
   #include <iostream>
 
 #endif // TWH_CMP_MSC
+
+
+
 
 
 

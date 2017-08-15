@@ -83,6 +83,7 @@ typedef union {
 #include "TwainAppCMD.h"
 #include "TwainApp_ui.h"
 #include "TwainCout.h"
+#include "TwainApp.h"
 
 #include <iostream>
 #include <fstream>
@@ -152,14 +153,19 @@ void negotiate_CAP(const pTW_CAPABILITY _pCap)
   for (;;)
   {
     if((TWON_ENUMERATION == _pCap->ConType) || 
-       (TWON_ONEVALUE == _pCap->ConType))
+       (TWON_ONEVALUE == _pCap->ConType) ||
+       (TWON_RANGE == _pCap->ConType))
     {
       TW_MEMREF pVal = _DSM_LockMemory(_pCap->hContainer);
 
       // print the caps current value
-      if(TWON_ENUMERATION == _pCap->ConType)
+      if(TWON_ENUMERATION == _pCap->ConType) //TWON_ENUMERATION
       {
         print_ICAP(_pCap->Cap, (pTW_ENUMERATION)(pVal));
+      }
+      else if(TWON_RANGE == _pCap->ConType) //TWON_RANGE
+      {
+        print_ICAP(_pCap->Cap, (pTW_RANGE)(pVal));
       }
       else // TWON_ONEVALUE
       {
@@ -179,8 +185,8 @@ void negotiate_CAP(const pTW_CAPABILITY _pCap)
       {
         int n = atoi(input.c_str());
         TW_UINT16  valUInt16 = 0;
-		pTW_FIX32  pValFix32 = {0};
-		pTW_FRAME  pValFrame = {0};
+		    pTW_FIX32  pValFix32 = {0};
+		    pTW_FRAME  pValFrame = {0};
 
         // print the caps current value
         if(TWON_ENUMERATION == _pCap->ConType)
@@ -310,6 +316,95 @@ void negotiateCaps()
       printMainCaps();
     }
   }
+
+  return;
+}
+
+//////////////////////////////////////////////////////////////////////////////
+/**
+* Enables the source. The source will let us know when it is ready to scan by
+* calling our registered callback function.
+*/
+void EnableDS_Short()
+{
+  gpTwainApplicationCMD->m_DSMessage = 0;
+
+  // -Enable the data source. This puts us in state 5 which means that we
+  // have to wait for the data source to tell us to move to state 6 and
+  // start the transfer.  Once in state 5, no more set ops can be done on the
+  // caps, only get ops.
+  // -The scan will not start until the source calls the callback function
+  // that was registered earlier.
+
+  if(!gpTwainApplicationCMD->enableDS(GetDesktopWindow(), TRUE))
+  {
+    return;
+  }
+
+  // now we have to wait until we hear something back from the DS.
+  while(!gpTwainApplicationCMD->m_DSMessage)
+  {
+    TW_EVENT twEvent = {0};
+
+    // If we are using callbacks, there is nothing to do here except sleep
+    // and wait for our callback from the DS.  If we are not using them, 
+    // then we have to poll the DSM.
+
+    // Pumping messages is for Windows only
+	  MSG Msg;
+	  if(!GetMessage((LPMSG)&Msg, NULL, 0, 0))
+    {
+      break;//WM_QUIT
+    }
+    twEvent.pEvent = (TW_MEMREF)&Msg;
+
+    twEvent.TWMessage = MSG_NULL;
+    TW_UINT16  twRC = TWRC_NOTDSEVENT;
+    twRC = _DSM_Entry( gpTwainApplicationCMD->getAppIdentity(),
+                gpTwainApplicationCMD->getDataSource(),
+                DG_CONTROL,
+                DAT_EVENT,
+                MSG_PROCESSEVENT,
+                (TW_MEMREF)&twEvent);
+
+    if(!gUSE_CALLBACKS && twRC==TWRC_DSEVENT)
+    {
+      // check for message from Source
+      switch (twEvent.TWMessage)
+      {
+        case MSG_XFERREADY:
+        case MSG_CLOSEDSREQ:
+        case MSG_CLOSEDSOK:
+        case MSG_NULL:
+          gpTwainApplicationCMD->m_DSMessage = twEvent.TWMessage;
+          break;
+
+        default:
+          tw_cerr << "\nError - Unknown message in MSG_PROCESSEVENT loop\n" << tw_endl;
+          break;
+      }
+    }
+    if(twRC!=TWRC_DSEVENT)
+    {   
+      TranslateMessage ((LPMSG)&Msg);
+      DispatchMessage ((LPMSG)&Msg);
+    }
+  }
+
+  // At this point the source has sent us a callback saying that it is ready to
+  // transfer the image.
+
+  if(gpTwainApplicationCMD->m_DSMessage == MSG_XFERREADY)
+  {
+    // move to state 6 as a result of the data source. We can start a scan now.
+    gpTwainApplicationCMD->m_DSMState = 6;
+
+    gpTwainApplicationCMD->startScan();
+  }
+
+  // Scan is done, disable the ds, thus moving us back to state 4 where we
+  // can negotiate caps again.
+  gpTwainApplicationCMD->disableDS();
 
   return;
 }
@@ -605,7 +700,7 @@ int ts_select(int *id)
   return 0;
 }
 
-int ts_scan (int id)
+int ts_action (int id, ENUM_TS_ACTION ts_action)
 {
 	 //UNUSEDARG(argc);
   //UNUSEDARG(argv);
@@ -626,78 +721,30 @@ int ts_scan (int id)
 
   gpTwainApplicationCMD->loadDS((TW_INT32) id);
 
-  EnableDS();
+  try {
+    switch (ts_action)
+    {
+      case TS_SCAN:
+        EnableDS_Short();
+        //EnableDS();
+      break;
+
+      case TS_GET_CONFIG:
+          print_config();
+      break;
+      
+      default:
+      break;
+    }
+  }
+  catch(int e)
+  {
+    cout << "error" << e << '\n';
+  }
 
   gpTwainApplicationCMD->unloadDS();
 
   gpTwainApplicationCMD->disconnectDSM();
-
-
-  //string input;
-
-  //printOptions();
-
-  // start the main event loop
-  //for (;;)
-  //{
-  //  tw_cout << "\n(h for help) > ";
-  //  cin >> input;
-  //  tw_cout << tw_endl;
-
-  //  if("q" == input)
-  //  {
-  //    break;
-  //  }
-  //  else if("h" == input)
-  //  {
-  //    printOptions();
-  //  }
-  //  else if("cdsm" == input)
-  //  {
-  //    gpTwainApplicationCMD->connectDSM();
-  //  }
-  //  else if("xdsm" == input)
-  //  {
-  //    gpTwainApplicationCMD->disconnectDSM();
-  //  }
-  //  else if("lds" == input)
-  //  {
-  //    gpTwainApplicationCMD->printAvailableDataSources();
-  //  }
-  //  else if("pds" == input.substr(0,3))
-  //  {
-  //    gpTwainApplicationCMD->printIdentityStruct(atoi(input.substr(3,input.length()-3).c_str()));
-  //  }
-  //  else if("cds" == input.substr(0,3))
-  //  {
-  //    gpTwainApplicationCMD->loadDS(atoi(input.substr(3,input.length()-3).c_str()));
-  //  }
-  //  else if("xds" == input)
-  //  {
-  //    gpTwainApplicationCMD->unloadDS();
-  //  }
-  //  else if("caps" == input)
-  //  {
-  //    if(gpTwainApplicationCMD->m_DSMState < 3)
-  //    {
-  //      tw_cout << "\nYou need to select a source first!" << tw_endl;
-  //    }
-  //    else
-  //    {
-  //      negotiateCaps();
-  //      printOptions();
-  //    }
-  //  }
-  //  else if("scan" == input)
-  //  {
-  //    EnableDS();
-  //  }
-  //  else
-  //  {
-  //    // default action
-  //    printOptions();
-  //  }
-  //}
 
   gpTwainApplicationCMD->exit();
   delete gpTwainApplicationCMD;
@@ -707,3 +754,82 @@ int ts_scan (int id)
 	return 0;
 }
 
+int ts_scan (int id)
+{
+	return ts_action(id, TS_GET_CONFIG);
+}
+
+
+int ts_get_config (int id)
+{
+  return ts_action(id, TS_GET_CONFIG);
+}
+
+void print_config ()
+{
+
+  TwainApp *_twainApp = new TwainApp();
+  TW_MEMREF pVal;
+
+  // xfermech
+  pVal = _DSM_LockMemory(gpTwainApplicationCMD->m_ICAP_XFERMECH.hContainer);
+  print_ICAP(gpTwainApplicationCMD->m_ICAP_XFERMECH.Cap, (pTW_ENUMERATION)(pVal));
+  _DSM_UnlockMemory(gpTwainApplicationCMD->m_ICAP_XFERMECH.hContainer);
+
+  // pixeltype
+  pVal = _DSM_LockMemory(gpTwainApplicationCMD->m_ICAP_PIXELTYPE.hContainer);
+  print_ICAP(gpTwainApplicationCMD->m_ICAP_PIXELTYPE.Cap, (pTW_ENUMERATION)(pVal));
+  _DSM_UnlockMemory(gpTwainApplicationCMD->m_ICAP_PIXELTYPE.hContainer);
+
+  // bitdepth
+  pVal = _DSM_LockMemory(gpTwainApplicationCMD->m_ICAP_BITDEPTH.hContainer);
+  print_ICAP(gpTwainApplicationCMD->m_ICAP_BITDEPTH.Cap, (pTW_ENUMERATION)(pVal));
+  _DSM_UnlockMemory(gpTwainApplicationCMD->m_ICAP_BITDEPTH.hContainer);
+
+  // imagefileformat
+  pVal = _DSM_LockMemory(gpTwainApplicationCMD->m_ICAP_IMAGEFILEFORMAT.hContainer);
+  print_ICAP(gpTwainApplicationCMD->m_ICAP_IMAGEFILEFORMAT.Cap, (pTW_ENUMERATION)(pVal));
+  _DSM_UnlockMemory(gpTwainApplicationCMD->m_ICAP_IMAGEFILEFORMAT.hContainer);
+
+  // units
+  pVal = _DSM_LockMemory(gpTwainApplicationCMD->m_ICAP_UNITS.hContainer);
+  print_ICAP(gpTwainApplicationCMD->m_ICAP_UNITS.Cap, (pTW_ENUMERATION)(pVal));
+  _DSM_UnlockMemory(gpTwainApplicationCMD->m_ICAP_UNITS.hContainer);
+
+  // xresolution
+  pVal = _DSM_LockMemory(gpTwainApplicationCMD->m_ICAP_XRESOLUTION.hContainer);
+  print_ICAP(gpTwainApplicationCMD->m_ICAP_XRESOLUTION.Cap, (pTW_RANGE)(pVal));
+  _DSM_UnlockMemory(gpTwainApplicationCMD->m_ICAP_XRESOLUTION.hContainer);
+
+  // yresolution
+  pVal = _DSM_LockMemory(gpTwainApplicationCMD->m_ICAP_YRESOLUTION.hContainer);
+  print_ICAP(gpTwainApplicationCMD->m_ICAP_YRESOLUTION.Cap, (pTW_RANGE)(pVal));
+  _DSM_UnlockMemory(gpTwainApplicationCMD->m_ICAP_YRESOLUTION.hContainer);
+
+  // gamma
+  pVal = _DSM_LockMemory(gpTwainApplicationCMD->m_ICAP_GAMMA.hContainer);
+  print_ICAP(gpTwainApplicationCMD->m_ICAP_GAMMA.Cap, (pTW_ONEVALUE)(pVal));
+  _DSM_UnlockMemory(gpTwainApplicationCMD->m_ICAP_GAMMA.hContainer);
+
+  // brightness
+  pVal = _DSM_LockMemory(gpTwainApplicationCMD->m_ICAP_BRIGHTNESS.hContainer);
+  print_ICAP(gpTwainApplicationCMD->m_ICAP_BRIGHTNESS.Cap, (pTW_RANGE)(pVal));
+  _DSM_UnlockMemory(gpTwainApplicationCMD->m_ICAP_BRIGHTNESS.hContainer);
+
+  // contrast
+  pVal = _DSM_LockMemory(gpTwainApplicationCMD->m_ICAP_CONTRAST.hContainer);
+  print_ICAP(gpTwainApplicationCMD->m_ICAP_CONTRAST.Cap, (pTW_RANGE)(pVal));
+  _DSM_UnlockMemory(gpTwainApplicationCMD->m_ICAP_CONTRAST.hContainer);
+
+  // frames
+  pVal = _DSM_LockMemory(gpTwainApplicationCMD->m_ICAP_FRAMES.hContainer);
+  print_ICAP(gpTwainApplicationCMD->m_ICAP_FRAMES.Cap, (pTW_ONEVALUE)(pVal));
+  _DSM_UnlockMemory(gpTwainApplicationCMD->m_ICAP_FRAMES.hContainer);
+
+  // colormanagement enable
+  pVal = _DSM_LockMemory(gpTwainApplicationCMD->m_CAP_COLORMANAGEMENTENABLED.hContainer);
+  print_ICAP(gpTwainApplicationCMD->m_CAP_COLORMANAGEMENTENABLED.Cap, (pTW_ONEVALUE)(pVal));
+  _DSM_UnlockMemory(gpTwainApplicationCMD->m_CAP_COLORMANAGEMENTENABLED.hContainer);
+
+  return;
+}

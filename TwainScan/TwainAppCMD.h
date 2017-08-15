@@ -271,7 +271,12 @@ public:
   TW_CAPABILITY   m_ICAP_XRESOLUTION;     /**< Current/Available optical resolutions for x-axis. */
   TW_CAPABILITY   m_ICAP_YRESOLUTION;     /**< Current/Available optical resolutions for y-axis */
   TW_CAPABILITY   m_ICAP_FRAMES;          /**< Size and location of frames on page. */
-  
+  TW_CAPABILITY   m_CAP_COLORMANAGEMENTENABLED;    
+  TW_CAPABILITY   m_ICAP_GAMMA;
+  TW_CAPABILITY   m_ICAP_BRIGHTNESS;
+  TW_CAPABILITY   m_ICAP_CONTRAST;
+
+
 #ifdef TWNDS_OS_LINUX
   sem_t m_TwainEvent;
 #endif

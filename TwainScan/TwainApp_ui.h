@@ -85,4 +85,12 @@ void print_ICAP(const TW_UINT16 _unCap, pTW_ONEVALUE _pCap);
 */
 void print_ICAP(const TW_UINT16 _unCap, pTW_ENUMERATION _pCap);
 
+/**
+* @overload void print_ICAP(const TW_UINT16 _unCap, pTW_RANGE _pCap)
+* prints the ICAP_xxxxx menu for type TW_RANGE
+* @param[in] _unCap The cap to print
+* @param[in] _pCap pointer to the TW_RANGE returned by the source for this cap
+*/
+void print_ICAP(const TW_UINT16 _unCap, pTW_RANGE _pCap);
+
 #endif // __TWAINAPP_UI_H__

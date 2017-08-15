@@ -115,15 +115,14 @@ void print_ICAP(const TW_UINT16 _unCap, pTW_ONEVALUE _pCap)
     << "\n"
     << convertCAP_toString(_unCap) << "\n"
     << "--------------\n"
-    << "Showing supported types. * indicates current setting.\n\n"
-    << "q - done\n";
+    << "Showing supported types. * indicates current setting.\n\n";
   
   switch(_pCap->ItemType)
   {
     case TWTY_FIX32:
     {
       pTW_FIX32 pFix32 = (pTW_FIX32)&_pCap->Item;
-      tw_cout << "1 - " << pFix32->Whole << "." << pFix32->Frac << "*\n" << tw_endl;
+      tw_cout << "1 - " << FIX32ToFloat(*pFix32) << "*\n" << tw_endl;
     }
     break;
 
@@ -201,8 +200,7 @@ void print_ICAP(const TW_UINT16 _unCap, pTW_ENUMERATION _pCap)
     << "\n"
     << convertCAP_toString(_unCap) << "\n"
     << "--------------\n"
-    << "Showing supported types. * indicates current setting.\n\n"
-    << "q - done\n";
+    << "Showing supported types. * indicates current setting.\n\n";
 
   for(TW_UINT32 x = 0; x < _pCap->NumItems; ++x)
   {
@@ -303,6 +301,34 @@ void print_ICAP(const TW_UINT16 _unCap, pTW_ENUMERATION _pCap)
   }
 
   tw_cout << tw_endl;
+  return;
+}
+
+
+
+//////////////////////////////////////////////////////////////////////////////
+void print_ICAP(const TW_UINT16 _unCap, pTW_RANGE _pCap)
+{
+  if(0 == _pCap)
+  {
+    return;
+  }
+
+  tw_cout
+    << "\n"
+    << convertCAP_toString(_unCap) << "\n"
+    << "--------------\n"
+    << "Showing supported types. * indicates current setting.\n\n";
+
+  tw_cout 
+    << " ItemType: " << _pCap->ItemType << "\n"
+    << " MinValue: " << _pCap->MinValue << "\n"
+    << " MaxValue: " << _pCap->MaxValue << "\n"
+    << " StepSize: " << _pCap->StepSize << "\n"
+    << " DefaultValue: " << _pCap->DefaultValue << "\n"
+    << " CurrentValue: " << _pCap->CurrentValue << "\n";
+
+  cout << endl;
   return;
 }
 //////////////////////////////////////////////////////////////////////////////
