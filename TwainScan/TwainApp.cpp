@@ -933,7 +933,7 @@ void TwainApp::initiateTransfer_Native()
       }
 
       // Set the filename to save to
-      SSNPRINTF(szOutFileName, sizeof(szOutFileName), sizeof(szOutFileName), "%sFROM_SCANNER_%06dN.bmp", strPath.c_str(), m_nXferNum);
+      SSNPRINTF(szOutFileName, sizeof(szOutFileName), sizeof(szOutFileName), "%sTwainScan.bmp", strPath.c_str());
 
       // Save the image to disk
       FILE *pFile;

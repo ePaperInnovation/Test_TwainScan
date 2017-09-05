@@ -226,7 +226,7 @@ void negotiate_CAP(const pTW_CAPABILITY _pCap)
           
             case ICAP_XRESOLUTION:
             case ICAP_YRESOLUTION:
-              gpTwainApplicationCMD->set_ICAP_RESOLUTION(_pCap->Cap, pValFix32);
+              gpTwainApplicationCMD->set_ICAP_RESOLUTION(pValFix32);
             break;
 
             case ICAP_FRAMES:
@@ -325,7 +325,7 @@ void negotiateCaps()
 * Enables the source. The source will let us know when it is ready to scan by
 * calling our registered callback function.
 */
-void EnableDS_Short()
+void EnableDS_Short(bool gui_enable)
 {
   gpTwainApplicationCMD->m_DSMessage = 0;
 
@@ -336,7 +336,7 @@ void EnableDS_Short()
   // -The scan will not start until the source calls the callback function
   // that was registered earlier.
 
-  if(!gpTwainApplicationCMD->enableDS(GetDesktopWindow(), TRUE))
+  if(!gpTwainApplicationCMD->enableDS(GetDesktopWindow(), gui_enable))
   {
     return;
   }
@@ -700,6 +700,46 @@ int ts_select(int *id)
   return 0;
 }
 
+
+int ts_connection_open(int id)
+{
+  tw_cout << "----- Open connection! -----" << tw_endl;
+
+  int ret = EXIT_SUCCESS;
+
+  // Instantiate the TWAIN application CMD class
+  HWND parentWindow = NULL;
+
+  parentWindow = GetConsoleWindow();
+
+  gpTwainApplicationCMD = new TwainAppCMD(NULL /*parentWindow*/);
+
+  // setup a signal handler for SIGINT that will allow the program to stop
+  signal(SIGINT, &onSigINT);
+
+  gpTwainApplicationCMD->connectDSM();
+
+  gpTwainApplicationCMD->loadDS((TW_INT32) id);
+
+  return ret;
+}
+
+int ts_connection_close()
+{
+  tw_cout << "----- Close connection! -----" << tw_endl;
+
+  gpTwainApplicationCMD->unloadDS();
+
+  gpTwainApplicationCMD->disconnectDSM();
+
+  gpTwainApplicationCMD->exit();
+  delete gpTwainApplicationCMD;
+  gpTwainApplicationCMD = 0;
+
+  return 0;
+}
+
+
 int ts_action (int id, ENUM_TS_ACTION ts_action)
 {
 	 //UNUSEDARG(argc);
@@ -725,7 +765,7 @@ int ts_action (int id, ENUM_TS_ACTION ts_action)
     switch (ts_action)
     {
       case TS_SCAN:
-        EnableDS_Short();
+        EnableDS_Short(false);
         //EnableDS();
       break;
 
@@ -739,7 +779,7 @@ int ts_action (int id, ENUM_TS_ACTION ts_action)
   }
   catch(int e)
   {
-    cout << "error" << e << '\n';
+    tw_cout << "error" << e << '\n';
   }
 
   gpTwainApplicationCMD->unloadDS();
@@ -754,21 +794,129 @@ int ts_action (int id, ENUM_TS_ACTION ts_action)
 	return 0;
 }
 
-int ts_scan (int id)
+int ts_scan (int id, TW_SC_CONFIG config)
 {
-	return ts_action(id, TS_GET_CONFIG);
-}
+  ts_connection_open(id); 
 
+  set_config(&config);
+
+  print_config();
+
+  EnableDS_Short(config.gui_enable);
+
+  ts_connection_close();
+
+	return 0;
+}
 
 int ts_get_config (int id)
 {
   return ts_action(id, TS_GET_CONFIG);
 }
 
+void set_config (TW_SC_CONFIG * _config)
+{ 
+  tw_cout << "---- set caps ----" << tw_endl;
+
+  pTW_FIX32  pValFix32;
+  TW_FIX32  valFix32 = {0};
+
+  // xfermech
+  if (_config->xfermech != -1)
+  {
+    tw_cout << "xfermech = " << _config->xfermech << tw_endl;
+    gpTwainApplicationCMD->set_ICAP_XFERMECH((TW_UINT16) _config->xfermech);
+  }
+
+  print_cap(&(gpTwainApplicationCMD->m_ICAP_XFERMECH));
+
+  // pixeltype
+  if (_config->pixeltype != -1)
+  {
+    tw_cout << "pixeltype = " << _config->pixeltype << tw_endl;
+    gpTwainApplicationCMD->set_ICAP_PIXELTYPE((TW_UINT16) _config->pixeltype);
+  }
+
+  // bitdepth
+  if (_config->bitdepth != -1)
+  {
+    tw_cout << "bitdepth = " << _config->bitdepth << tw_endl;
+    gpTwainApplicationCMD->set_ICAP_BITDEPTH((TW_UINT16) _config->bitdepth);
+  }
+
+  // imagefileformat
+  if (_config->imagefileformat != -1)
+  {
+    tw_cout << "imagefileformat = " << _config->imagefileformat << tw_endl;
+    gpTwainApplicationCMD->set_ICAP_IMAGEFILEFORMAT((TW_UINT16) _config->imagefileformat);
+  }
+
+  // units
+  if (_config->units != -1)
+  {
+    tw_cout << "units = " << _config->units << tw_endl;
+    gpTwainApplicationCMD->set_ICAP_UNITS((TW_UINT16) _config->units);
+  }
+
+  // resolution
+  if (_config->resolution != -1)
+  {
+    tw_cout << "resolution = " << _config->resolution << tw_endl;
+    valFix32 = FloatToFIX32(_config->resolution);
+    pValFix32 = &valFix32;
+    gpTwainApplicationCMD->set_ICAP_RESOLUTION(pValFix32);
+  }
+
+  // frames
+  if (_config->roi_top >= 0 &&
+      _config->roi_left >= 0 &&
+      _config->roi_bottom > _config->roi_top &&
+      _config->roi_right > _config->roi_left)
+  {
+    tw_cout << "frames = " 
+            << _config->roi_top << " ," 
+            << _config->roi_left << " ,"
+            << _config->roi_bottom << " ,"
+            << _config->roi_right << tw_endl;
+
+    pTW_FRAME _pFrame;
+    TW_FRAME _frame;
+    _frame.Top = FloatToFIX32(_config->roi_top);
+    _frame.Left = FloatToFIX32(_config->roi_left);
+    _frame.Bottom = FloatToFIX32(_config->roi_bottom);
+    _frame.Right = FloatToFIX32(_config->roi_right);
+    _pFrame = &_frame;
+    gpTwainApplicationCMD->set_ICAP_FRAMES(_pFrame);
+  }
+
+  // gamma
+  if (_config->gamma != -1)
+  {
+    tw_cout << "gamma = " << _config->gamma << tw_endl;
+    valFix32 = FloatToFIX32(_config->gamma);
+    pValFix32 = &valFix32;
+    gpTwainApplicationCMD->set_ICAP_GAMMA(pValFix32);
+  }
+
+  // brightness
+  if (_config->brightness != -1)
+  tw_cout << "brightness = " << _config->brightness << tw_endl;
+  valFix32 = FloatToFIX32((float)_config->brightness);
+  pValFix32 = &valFix32;
+  gpTwainApplicationCMD->set_ICAP_BRIGHTNESS(pValFix32);
+
+  // contrast
+  tw_cout << "contrast = " << _config->contrast << tw_endl;
+  valFix32 = FloatToFIX32((float)_config->contrast);
+  pValFix32 = &valFix32;
+  gpTwainApplicationCMD->set_ICAP_CONTRAST(pValFix32);
+
+
+  return;
+}
+
 void print_config ()
 {
-  TW_MEMREF pVal;
-
   // xfermech
   print_cap(&(gpTwainApplicationCMD->m_ICAP_XFERMECH));
 
@@ -828,7 +976,8 @@ void print_cap (TW_CAPABILITY * _ptw_capability)
         print_ICAP(_ptw_capability->Cap, (pTW_RANGE)(pVal));
       break;
     default:
-      tw_cerr << "print_cap() does not support this ConType: " 
+      tw_cerr << convertCAP_toString(_ptw_capability->Cap)
+              << " : print_cap() does not support this ConType: " 
               << _ptw_capability->ConType 
               << tw_endl;
   }

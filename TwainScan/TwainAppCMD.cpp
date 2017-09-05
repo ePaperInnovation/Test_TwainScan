@@ -54,6 +54,8 @@
 #include "TwainAppCMD.h"
 #include "CTiffWriter.h"
 #include "TwainString.h"
+#include "TwainCout.h"
+#include "TwainScan.h"
 
 using namespace std;
 
@@ -360,6 +362,10 @@ void TwainAppCMD::set_ICAP_UNITS(const TW_UINT16 _val)
 {
   set_CapabilityOneValue(ICAP_UNITS, _val, TWTY_UINT16);
 
+  get_CAP(m_ICAP_FRAMES);
+  get_CAP(m_ICAP_XRESOLUTION);
+  get_CAP(m_ICAP_YRESOLUTION);
+
   // now that we have set it, re-get it to ensure it was set
   if(TWCC_SUCCESS==get_CAP(m_ICAP_UNITS))
   {
@@ -368,15 +374,10 @@ void TwainAppCMD::set_ICAP_UNITS(const TW_UINT16 _val)
     {
       pTW_ENUMERATION pCapPT = (pTW_ENUMERATION)_DSM_LockMemory(m_ICAP_UNITS.hContainer);
 
-      if(_val == pCapPT->ItemList[pCapPT->CurrentIndex])
+      if(_val == pCapPT->CurrentIndex)
       {
         PrintCMDMessage("Capability successfully set!\n");
-
-        // successfully setting this cap means that we have to re-obtain the X/Y resolutions as well
-        get_CAP(m_ICAP_XRESOLUTION);
-        get_CAP(m_ICAP_YRESOLUTION);
       }
-      _DSM_UnlockMemory(m_ICAP_UNITS.hContainer);
     }
   }
 
@@ -410,45 +411,16 @@ void TwainAppCMD::set_ICAP_PIXELTYPE(const TW_UINT16 _pt)
 }
 
 //////////////////////////////////////////////////////////////////////////////
-void TwainAppCMD::set_ICAP_RESOLUTION(const TW_UINT16 _ICAP, const pTW_FIX32 _pVal)
+void TwainAppCMD::set_ICAP_RESOLUTION(const pTW_FIX32 _pVal)
 {
-  if((ICAP_XRESOLUTION != _ICAP) &&
-     (ICAP_YRESOLUTION != _ICAP))
-  {
-    printError(m_pDataSource, "Invalid resolution passed in! Resolution set failed.");
-    return;
-  }
 
-  set_CapabilityOneValue(_ICAP, _pVal);
+  set_CapabilityOneValue(ICAP_XRESOLUTION, _pVal);
+  set_CapabilityOneValue(ICAP_YRESOLUTION, _pVal);
 
   // Get the new RESOLUTION caps values to see if the set was successfull.
   get_CAP(m_ICAP_XRESOLUTION);
   get_CAP(m_ICAP_YRESOLUTION);
 
-  pTW_CAPABILITY pCapRes = 0;
-
-  if(ICAP_XRESOLUTION == _ICAP)
-  {
-    pCapRes = &m_ICAP_XRESOLUTION;
-  }
-  else
-  {
-    pCapRes = &m_ICAP_YRESOLUTION;
-  }
-  
-  // check ICAP_XRESOLUTION
-  if(TWON_ENUMERATION == pCapRes->ConType &&
-    0 != pCapRes->hContainer)
-  {
-    pTW_ENUMERATION_FIX32 pdat = (pTW_ENUMERATION_FIX32)pCapRes->hContainer;
-
-    if(TWTY_FIX32 == pdat->ItemType &&
-      _pVal->Whole == pdat->ItemList[pdat->CurrentIndex].Whole &&
-      _pVal->Frac == pdat->ItemList[pdat->CurrentIndex].Frac)
-    {
-      PrintCMDMessage("Resolution successfully set!\n");
-    }
-  }
   return;
 }
 
@@ -485,6 +457,7 @@ void TwainAppCMD::set_ICAP_FRAMES(const pTW_FRAME _pFrame)
 //////////////////////////////////////////////////////////////////////////////
 void TwainAppCMD::set_ICAP_XFERMECH(const TW_UINT16 _mech)
 {
+  tw_cout << "set_ICAP_XFERMECH: " << _mech << tw_endl;
   set_CapabilityOneValue(ICAP_XFERMECH, _mech, TWTY_UINT16);
 
   // now that we have set it, re-get it to ensure it was set
@@ -494,6 +467,10 @@ void TwainAppCMD::set_ICAP_XFERMECH(const TW_UINT16 _mech)
     if(getICAP_XFERMECH(mech) &&
       mech == _mech)
     {
+      tw_cout << "mech " << mech << " _mech " << _mech << tw_endl;
+
+      print_cap(&m_ICAP_XFERMECH);
+
       PrintCMDMessage("XferMech successfully set!\n");
     }
   }
@@ -563,6 +540,27 @@ void TwainAppCMD::set_ICAP_BITDEPTH(const TW_UINT16 _nVal)
   }
 
   return;
+}
+
+//////////////////////////////////////////////////////////////////////////////
+void TwainAppCMD::set_ICAP_GAMMA(const pTW_FIX32 _pVal)
+{
+  set_CapabilityOneValue(ICAP_GAMMA, _pVal);
+  get_CAP(m_ICAP_GAMMA);
+}
+
+//////////////////////////////////////////////////////////////////////////////
+void TwainAppCMD::set_ICAP_CONTRAST(const pTW_FIX32 _pVal)
+{
+  set_CapabilityOneValue(ICAP_CONTRAST, _pVal);
+  get_CAP(m_ICAP_CONTRAST);;
+}
+
+//////////////////////////////////////////////////////////////////////////////
+void TwainAppCMD::set_ICAP_BRIGHTNESS(const pTW_FIX32 _pVal)
+{
+  set_CapabilityOneValue(ICAP_BRIGHTNESS, _pVal);
+  get_CAP(m_ICAP_BRIGHTNESS);
 }
 
 //////////////////////////////////////////////////////////////////////////////

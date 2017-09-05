@@ -51,13 +51,34 @@ enum ENUM_TS_ACTION
   TS_GET_CONFIG =1
 };
 
+typedef struct 
+{
+  bool gui_enable;
+  int xfermech;
+  int pixeltype;
+  int bitdepth;
+  int imagefileformat;
+  int units;
+  float resolution;
+  float roi_top;
+  float roi_left;
+  float roi_bottom;
+  float roi_right;
+  int brightness;
+  int contrast;
+  float gamma;
+  bool log_enable;
+} TW_SC_CONFIG;
+
 extern "C" __declspec(dllexport) double Add_hokus(double a, double b);
 extern "C" __declspec(dllexport) double Add_hokus2(double a, double b);
 
 int ts_action (int id, ENUM_TS_ACTION ts_action);
+int ts_connection_open(int id);
+int ts_connection_close();
 
 extern "C" __declspec(dllexport) int ts_select(int *id);
-extern "C" __declspec(dllexport) int ts_scan(int id);
+extern "C" __declspec(dllexport) int ts_scan(int id, TW_SC_CONFIG config);
 extern "C" __declspec(dllexport) int ts_get_config(int id);
 
 
@@ -66,6 +87,7 @@ extern "C" __declspec(dllexport) int ts_get_config(int id);
 #include "TwainApp.h"
 #include "twain.h"
 
+void set_config (TW_SC_CONFIG * _config);
 void print_config();
 void print_cap (TW_CAPABILITY * _ptw_capability);
 

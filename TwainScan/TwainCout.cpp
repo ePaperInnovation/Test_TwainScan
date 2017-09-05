@@ -14,11 +14,14 @@ using namespace std;
 tw_ostream tw_cout;
 tw_ostream tw_cerr;
 char * tw_endl = "\n\x0";
+char * tw_log_path = "TwainScan.log";
+bool tw_log_enable = true;
+
 
 void _write(char * a)
 {
   ofstream myfile;
-  myfile.open ("log.txt", fstream::app);
+  myfile.open (tw_log_path, fstream::app);
   myfile << a;
   myfile.close();
 }
@@ -26,7 +29,7 @@ void _write(char * a)
 void _write(string a)
 {
   ofstream myfile;
-  myfile.open ("log.txt", fstream::app);
+  myfile.open (tw_log_path, fstream::app);
   myfile << a;
   myfile.close();
 }

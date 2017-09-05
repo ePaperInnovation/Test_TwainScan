@@ -162,7 +162,7 @@ public:
 * @param[in] _Cap the RESOLUTION cap to set, either ICAP_XRESOLUTION or ICAP_YRESOLUTION
 * @param[in] _pVal the value to set the cap to.
 */
-  void set_ICAP_RESOLUTION(const TW_UINT16 _Cap, const pTW_FIX32 _pVal);
+  void set_ICAP_RESOLUTION(const pTW_FIX32 _pVal);
 
 /**
 * Sets the ICAP_XFERMECH capability
@@ -193,6 +193,12 @@ public:
 * @param[in] _nVal the bit depth to set
 */
   void set_ICAP_BITDEPTH(const TW_UINT16 _nVal);
+
+
+  void TwainAppCMD::set_ICAP_GAMMA(const pTW_FIX32 _pVal);
+  void TwainAppCMD::set_ICAP_CONTRAST(const pTW_FIX32 _pVal);
+  void TwainAppCMD::set_ICAP_BRIGHTNESS(const pTW_FIX32 _pVal);
+
 
 /**
 * Gets the current setting for the ICAP_UNITS cap
