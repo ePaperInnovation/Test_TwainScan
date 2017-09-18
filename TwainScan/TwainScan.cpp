@@ -938,6 +938,9 @@ void print_config ()
   // yresolution
   print_cap(&(gpTwainApplicationCMD->m_ICAP_YRESOLUTION));
 
+  // colormanagement enable
+  print_cap(&(gpTwainApplicationCMD->m_CAP_COLORMANAGEMENTENABLED));
+
   // gamma
   print_cap(&(gpTwainApplicationCMD->m_ICAP_GAMMA));
 
@@ -952,6 +955,12 @@ void print_config ()
 
   // colormanagement enable
   print_cap(&(gpTwainApplicationCMD->m_CAP_COLORMANAGEMENTENABLED));
+
+  // undefined image size
+  print_cap(&(gpTwainApplicationCMD->m_ICAP_UNDEFINEDIMAGESIZE));
+
+  // automatic border detection
+  print_cap(&(gpTwainApplicationCMD->m_ICAP_AUTOMATICBORDERDETECTION));
 
   return;
 }
