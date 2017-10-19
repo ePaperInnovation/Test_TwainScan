@@ -906,6 +906,7 @@ void set_config (TW_SC_CONFIG * _config)
   gpTwainApplicationCMD->set_ICAP_BRIGHTNESS(pValFix32);
 
   // contrast
+  if (_config->contrast != -1)
   tw_cout << "contrast = " << _config->contrast << tw_endl;
   valFix32 = FloatToFIX32((float)_config->contrast);
   pValFix32 = &valFix32;
@@ -961,6 +962,12 @@ void print_config ()
 
   // automatic border detection
   print_cap(&(gpTwainApplicationCMD->m_ICAP_AUTOMATICBORDERDETECTION));
+
+  // autobright
+  print_cap(&(gpTwainApplicationCMD->m_ICAP_AUTOBRIGHT));
+
+  // bitorder
+  print_cap(&(gpTwainApplicationCMD->m_ICAP_BITORDER));
 
   return;
 }
