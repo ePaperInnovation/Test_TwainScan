@@ -5,23 +5,35 @@
 #include <assert.h>
 #include <stdio.h>
 
+
 #include "TwainApp.h"
 #include "CTiffWriter.h"
 #include "TwainString.h"
+#include <string>
 
 using namespace std;
 
 tw_ostream tw_cout;
 tw_ostream tw_cerr;
+
 char * tw_endl = "\n\x0";
-char * tw_log_path = "TwainScan.log";
+string tw_log_path = "TwainScan.log";
 bool tw_log_enable = true;
 
+//char * getexepath()
+//{
+//  WCHAR wc_result[ MAX_PATH ];
+//  GetModuleFileName( NULL, wc_result, MAX_PATH );
+//  char * c_result;
+//  wcstombs(c_result, wc_result, MAX_PATH);
+//
+//  return c_result;
+//}
 
 void _write(char * a)
 {
   ofstream myfile;
-  myfile.open (tw_log_path, fstream::app);
+  myfile.open (tw_log_path.c_str(), fstream::app);
   myfile << a;
   myfile.close();
 }
@@ -29,7 +41,7 @@ void _write(char * a)
 void _write(string a)
 {
   ofstream myfile;
-  myfile.open (tw_log_path, fstream::app);
+  myfile.open (tw_log_path.c_str(), fstream::app);
   myfile << a;
   myfile.close();
 }

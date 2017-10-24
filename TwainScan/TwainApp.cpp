@@ -932,12 +932,12 @@ void TwainApp::initiateTransfer_Native()
         break;
       }
 
-      // Set the filename to save to
-      SSNPRINTF(szOutFileName, sizeof(szOutFileName), sizeof(szOutFileName), "%sTwainScan.bmp", strPath.c_str());
+      // Set the filename to save to local folder
+      string filepath = getexepath() + "TwainScan.bmp";
 
       // Save the image to disk
       FILE *pFile;
-      FOPEN(pFile, szOutFileName, "wb");
+      FOPEN(pFile, filepath.c_str(), "wb");
       if(pFile == 0)
       {
         perror("fopen");

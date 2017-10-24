@@ -76,10 +76,11 @@ extern "C" __declspec(dllexport) double Add_hokus2(double a, double b);
 int ts_action (int id, ENUM_TS_ACTION ts_action);
 int ts_connection_open(int id);
 int ts_connection_close();
+void ts_initialize();
 
 extern "C" __declspec(dllexport) int ts_select(int *id);
 extern "C" __declspec(dllexport) int ts_scan(int id, TW_SC_CONFIG config);
-extern "C" __declspec(dllexport) int ts_get_config(int id);
+extern "C" __declspec(dllexport) int ts_get_config(int id, TW_SC_CONFIG *config);
 
 
 #include "Common.h"
@@ -90,6 +91,8 @@ extern "C" __declspec(dllexport) int ts_get_config(int id);
 void set_config (TW_SC_CONFIG * _config);
 void print_config();
 void print_cap (TW_CAPABILITY * _ptw_capability);
+
+string getexepath();
 
 //void negotiate_CAP(const pTW_CAPABILITY _pCap);
 

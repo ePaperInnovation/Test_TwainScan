@@ -5,11 +5,15 @@
 #include <cstdlib>
 #include <assert.h>
 #include <stdio.h>
+#include <string>
 
 #include "TwainApp.h"
 #include "CTiffWriter.h"
 #include "TwainString.h"
 #include "TwainCout.h"
+
+
+//char * getexepath();
 
 // just a dummy class to overload tw_cout and tw_cerr
 class tw_ostream{};
@@ -38,7 +42,7 @@ tw_ostream &operator<< (tw_ostream &ostr, int);
 extern tw_ostream tw_cout;
 extern tw_ostream tw_cerr;
 extern char * tw_endl; //"\n\x0"
-extern char * tw_log_path;
+extern string tw_log_path;
 extern bool tw_log_enable;
 
 #endif /*__TWAINCOUT_H__*/

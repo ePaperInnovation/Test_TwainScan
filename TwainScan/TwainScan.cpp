@@ -683,6 +683,8 @@ int main(int argc, char *argv[])
 
 int ts_select(int *id)
 {
+  ts_initialize();
+
   tw_ostream tw_cout;
   tw_cout << "Start Selection";
   gpTwainApplicationCMD = new TwainAppCMD(NULL);
@@ -796,6 +798,8 @@ int ts_action (int id, ENUM_TS_ACTION ts_action)
 
 int ts_scan (int id, TW_SC_CONFIG config)
 {
+  ts_initialize();
+
   ts_connection_open(id); 
 
   set_config(&config);
@@ -809,9 +813,10 @@ int ts_scan (int id, TW_SC_CONFIG config)
 	return 0;
 }
 
-int ts_get_config (int id)
+int ts_get_config (int id, TW_SC_CONFIG * config)
 {
-  return ts_action(id, TS_GET_CONFIG);
+  config->gamma = (float)1.8;
+  return 0;
 }
 
 void set_config (TW_SC_CONFIG * _config)
@@ -1001,4 +1006,32 @@ void print_cap (TW_CAPABILITY * _ptw_capability)
   _DSM_UnlockMemory(_ptw_capability->hContainer);
 
   return;
+}
+
+void ts_initialize()
+{
+  string path = getexepath();
+  
+  path.append(tw_log_path);
+  tw_log_path = path;
+}
+
+string getexepath()
+{
+  WCHAR wc_result[ MAX_PATH ];
+  char c_result[ MAX_PATH ];
+
+  // get complete path with executeable file name
+  GetModuleFileName( NULL, wc_result, MAX_PATH );
+
+  //convert to char 
+  wcstombs(c_result, wc_result, MAX_PATH);
+
+  // convert to string
+  string s_result = c_result;
+
+  // cut the executable file name
+  s_result = s_result.substr(0, s_result.find_last_of("\\") + 1);
+
+  return s_result;
 }
