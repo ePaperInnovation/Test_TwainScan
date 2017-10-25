@@ -139,6 +139,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="FreeImage.lib"
+				Version="1.0"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="..\TwainScan\lib"
 				GenerateDebugInformation="true"

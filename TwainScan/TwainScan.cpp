@@ -688,7 +688,7 @@ int ts_select(int *id)
   tw_ostream tw_cout;
   tw_cout << "Start Selection";
   gpTwainApplicationCMD = new TwainAppCMD(NULL);
-
+  
   gpTwainApplicationCMD->connectDSM();
 
   gpTwainApplicationCMD->userselectDataSource((TW_UINT32 *)id);
@@ -813,9 +813,21 @@ int ts_scan (int id, TW_SC_CONFIG config)
 	return 0;
 }
 
+int ts_get_path ()
+{
+  string s = getexepath();
+  wstring widestr = wstring(s.begin(), s.end());
+  MessageBox(0, widestr.c_str(), L"str", MB_OK);
+
+  return 0;
+}
+
 int ts_get_config (int id, TW_SC_CONFIG * config)
 {
   config->gamma = (float)1.8;
+  config->gui_enable = true;
+  config->resolution = 200;
+
   return 0;
 }
 
@@ -978,6 +990,7 @@ void print_config ()
 }
 
 
+
 void print_cap (TW_CAPABILITY * _ptw_capability)
 {
   //TwainApp *_twainApp = new TwainApp();
@@ -1010,9 +1023,10 @@ void print_cap (TW_CAPABILITY * _ptw_capability)
 
 void ts_initialize()
 {
+
+  // initialize the log path
   string path = getexepath();
-  
-  path.append(tw_log_path);
+  path.append("TwainScan.log");
   tw_log_path = path;
 }
 

@@ -81,6 +81,7 @@ void ts_initialize();
 extern "C" __declspec(dllexport) int ts_select(int *id);
 extern "C" __declspec(dllexport) int ts_scan(int id, TW_SC_CONFIG config);
 extern "C" __declspec(dllexport) int ts_get_config(int id, TW_SC_CONFIG *config);
+extern "C" __declspec(dllexport) int ts_get_path();
 
 
 #include "Common.h"

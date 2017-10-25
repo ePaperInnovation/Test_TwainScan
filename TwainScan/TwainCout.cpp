@@ -17,7 +17,7 @@ tw_ostream tw_cout;
 tw_ostream tw_cerr;
 
 char * tw_endl = "\n\x0";
-string tw_log_path = "TwainScan.log";
+string tw_log_path = "";
 bool tw_log_enable = true;
 
 //char * getexepath()

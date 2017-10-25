@@ -937,7 +937,9 @@ void TwainApp::initiateTransfer_Native()
 
       // Save the image to disk
       FILE *pFile;
+
       FOPEN(pFile, filepath.c_str(), "wb");
+
       if(pFile == 0)
       {
         perror("fopen");
