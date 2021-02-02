@@ -70,6 +70,14 @@ typedef struct
   bool log_enable;
 } TW_SC_CONFIG;
 
+typedef struct
+{
+  float roi_top;
+  float roi_left;
+  float roi_bottom;
+  float roi_right;
+} TW_SC_ROI;
+
 extern "C" __declspec(dllexport) double Add_hokus(double a, double b);
 extern "C" __declspec(dllexport) double Add_hokus2(double a, double b);
 
@@ -82,6 +90,7 @@ extern "C" __declspec(dllexport) int ts_select(int *id);
 extern "C" __declspec(dllexport) int ts_scan(int id, TW_SC_CONFIG config);
 extern "C" __declspec(dllexport) int ts_get_config(int id, TW_SC_CONFIG *config);
 extern "C" __declspec(dllexport) int ts_get_path();
+extern "C" __declspec(dllexport) int ts_get_roi(int id, TW_SC_ROI *roi);
 
 
 #include "Common.h"

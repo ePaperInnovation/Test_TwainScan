@@ -831,6 +831,36 @@ int ts_get_config (int id, TW_SC_CONFIG * config)
   return 0;
 }
 
+int ts_get_roi (int id, TW_SC_ROI * roi)
+{
+  ts_initialize();
+
+  tw_ostream tw_cout;
+  tw_cout << "Get ROI";
+
+  ts_connection_open(id); 
+ 
+  // frames
+  print_cap(&(gpTwainApplicationCMD->m_ICAP_FRAMES));
+
+  TW_CAPABILITY * _ptw_capability = &(gpTwainApplicationCMD->m_ICAP_FRAMES);
+
+  TW_MEMREF pVal;
+  pVal = _DSM_LockMemory(_ptw_capability->hContainer);
+
+  pTW_FRAME pframe = (pTW_FRAME)&((pTW_ONEVALUE)pVal)->Item;
+
+  roi->roi_left = FIX32ToFloat(pframe->Left);
+  roi->roi_right = FIX32ToFloat(pframe->Right);
+  roi->roi_top = FIX32ToFloat(pframe->Top);
+  roi->roi_bottom = FIX32ToFloat(pframe->Bottom);
+
+  ts_connection_close();
+
+  return 0;
+}
+
+
 void set_config (TW_SC_CONFIG * _config)
 { 
   tw_cout << "---- set caps ----" << tw_endl;
@@ -933,6 +963,11 @@ void set_config (TW_SC_CONFIG * _config)
   return;
 }
 
+void get_config ()
+{
+  
+}
+
 void print_config ()
 {
   // xfermech
@@ -1001,7 +1036,7 @@ void print_cap (TW_CAPABILITY * _ptw_capability)
   switch(_ptw_capability->ConType)
   {
     case TWON_ENUMERATION:
-      print_ICAP(_ptw_capability->Cap, (pTW_ENUMERATION)(pVal));
+        print_ICAP(_ptw_capability->Cap, (pTW_ENUMERATION)(pVal));
     break;
     case TWON_ONEVALUE:
         print_ICAP(_ptw_capability->Cap, (pTW_ONEVALUE)(pVal));
